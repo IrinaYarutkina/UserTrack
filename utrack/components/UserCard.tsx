@@ -24,16 +24,16 @@ type UserCardProps = {
  
 export default function UserCard({ user, onDelete }: UserCardProps) {
     return (
-        <Card className="shadow-md"> 
+        <Card className="shadow-md "> 
             <CardHeader>
-                <CardTitle> {user.name}</CardTitle>
+                <CardTitle className="flex justify-center"> {user.name}</CardTitle>
             </CardHeader>
             <CardContent> 
                 <p> Email: {user.email}</p>
                 <p> Компания: {user.company.name}</p>
             </CardContent>
-            <CardFooter className="flex gap-2"> 
-                <Link href={`/users/${user.id}`}> 
+            <CardFooter className="flex gap-2 justify-center"> 
+                <Link href={`/user/${user.id}`}>
                     <Button variant="outline"> Подробнее </Button>
                 </Link>
                 <Button variant="destructive" onClick={() => onDelete(user.id)}> 
