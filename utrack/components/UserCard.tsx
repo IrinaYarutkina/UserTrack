@@ -1,8 +1,8 @@
 //Карточка пользователя
 'use client'; 
 
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "./ui/card";
-import { Button } from "./ui/button";
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@components/ui/Card";
+import { Button } from "@components/ui/Button";
 import Link from "next/link";
 
 //тип TS
