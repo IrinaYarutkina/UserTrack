@@ -34,9 +34,11 @@ export default function UserCard({ user, onDelete }: UserCardProps) {
             </CardContent>
             <CardFooter className="flex gap-2 justify-center"> 
                 <Link href={`/user/${user.id}`}>
-                    <Button variant="outline"> Подробнее </Button>
+                    <Button className="border border-violet-400  bg-violet-200 text-black px-4 py-2 rounded-lg hover:bg-violet-100 transition-colors"> 
+                        Подробнее 
+                    </Button>
                 </Link>
-                <Button variant="destructive" onClick={() => onDelete(user.id)}> 
+                <Button className="border border-red-300 bg-red-100 text-black px-4 py-2 rounded-lg hover:bg-orange-50 transition-colors" onClick={() => onDelete(user.id)}> 
                     Удалить 
                 </Button>
             </CardFooter>
