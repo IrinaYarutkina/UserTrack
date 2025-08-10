@@ -17,14 +17,14 @@ export type User = {
 type UserContextType = {
     users: User[];
     setUsers: React.Dispatch<React.SetStateAction<User[]>>;
+    deleteUserLocally: (id: number) => void; 
+    addUserLocally: (user: Omit<User, "id" | "address"> & { address?: Address }) => void;
 };
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     const [users, setUsers] = useState<User[]>([]);
-
-
     useEffect(() => {
         const stored = localStorage.getItem("users");
         if (stored) {
@@ -45,9 +45,24 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         localStorage.setItem("users", JSON.stringify(users));
     }
     }, [users]);
+    //удаление
+    const deleteUserLocally = (id: number) => {
+        setUsers(prev => prev.filter(user => user.id !== id));
+    };
+
+    const addUserLocally = (user: Omit<User, "id" | "address"> & { address?: Address }) => {
+        const newId = users.length ? Math.max(...users.map((u) => u.id)) + 1 : 1;
+        const newUser: User = {
+            id: newId,
+            address: user.address || { street: "", city: "", zipcode: "" },
+            ...user,
+        };
+        setUsers((prev) => [...prev, newUser]);
+    };
+
 
     return (
-        <UserContext.Provider value={{ users, setUsers }}>
+        <UserContext.Provider value={{ users, setUsers, deleteUserLocally, addUserLocally }}>
         {children}
         </UserContext.Provider>
     );

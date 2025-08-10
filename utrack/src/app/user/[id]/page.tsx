@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "../../../../components/ui/card"; 
-import { Button } from "../../../../components/ui/button"; 
-import { useUserContext, User as ContextUser } from "../../../context/UserContext";
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@components/ui/card"; 
+import { Button } from "@components/ui/button"; 
+import { useUserContext, User as ContextUser } from "@/context/UserContext";
 
 export default function PageUser() {
     const { id } = useParams();
@@ -28,7 +28,7 @@ export default function PageUser() {
 
     return (
         <div className="flex items-center justify-center min-h-screen">
-            <Card className="w-lg max-w-3xl">
+            <Card className="w-lg max-w-3xl border border-[oklch(70.2%_0.183_293.541)] bg-[oklch(96.2%_0.018_272.314)]">
                 <CardHeader>
                     <CardTitle className="flex justify-center">{user.name}</CardTitle>
                 </CardHeader>
@@ -42,11 +42,11 @@ export default function PageUser() {
                 </CardContent>
                 <CardFooter className="flex gap-2 justify-center">
                     <Button onClick={() => router.push("/")}
-                        className="bg-gray-300 px-4 py-2 rounded"
+                        className="border border-[oklch(81.1%_0.111_293.571)] bg-[oklch(94.3%_0.029_294.588)] text-black px-4 py-2 rounded-lg hover:bg-blue-50 transition-colors"
                         > Назад
                     </Button>
                     <Button onClick={() => setIsEditing(true)}
-                        className="bg-gray-500 text-white px-4 py-2 rounded"
+                        className="border border-lime-400 bg-lime-100 text-black px-4 py-2 rounded-lg hover:bg-lime-50 transition-colors"
                         > Редактировать 
                     </Button>
                 </CardFooter>
