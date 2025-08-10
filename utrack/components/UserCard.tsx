@@ -21,7 +21,7 @@ type UserCardProps = {
     user: User;
     onDelete: (id: number) => void;
     };
- 
+    
 export default function UserCard({ user, onDelete }: UserCardProps) {
     return (
         <Card className="shadow-md "> 

@@ -2,99 +2,131 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-type User = {
-    id: number;
-    name: string;
-    username: string;
-    email: string;
-    address: {
-        street: string;
-        city: string;
-        zipcode: string;
-    };
-    phone: string;
-    website: string;
-    company: {
-        name: string;
-    }; 
-};
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "../../../../components/ui/card"; 
+import { Button } from "../../../../components/ui/button"; 
+import { useUserContext, User as ContextUser } from "../../../context/UserContext";
 
-export default function PageUser(){
+export default function PageUser() {
     const { id } = useParams();
     const router = useRouter();
-    const [user, setUser] = useState<User | null>(null);
-    const [isEditing, setIsEditing] = useState(false); //vjlfkrf?
+    const { users, setUsers } = useUserContext();
+    const userFromContext = users.find(u => u.id === Number(id)) || null; //поиск пользователя по айди
+    const [user, setUser] = useState<ContextUser | null>(null);
+    const [isEditing, setIsEditing] = useState(false); //редактирование
 
     useEffect(() => {
-        fetch(`https://jsonplaceholder.typicode.com/users/${id}`)
-        .then(res => res.json())
-        .then((data: User) => setUser(data))
-        .catch(err => console.error("Возникла ошибка загрузки:", err));
-    }, [id]);
-
+        setUser(userFromContext);
+    }, [userFromContext]);
     if (!user) {
-        return <div className="p-6"> Загрузка... </div>
+        return <div className="p-6">Загрузка...</div>;
     }
+    const handleSave = () => {
+        if (!user) return;
+        setUsers(prev => prev.map(u => u.id === user.id ? user : u));
+        setIsEditing(false);
+    };
 
     return (
-        <div className="p-6 space-y-4 "> 
-            <h1 className="text-2xl font-bold">{user.name}</h1>
-            <p><strong>Username:</strong> {user.username}</p>
-            <p><strong>Email:</strong> {user.email}</p>
-            <p><strong>Адрес:</strong> {user.address.street}, {user.address.city}, {user.address.zipcode}</p>
-            <p><strong>Телефон:</strong> {user.phone}</p>
-            <p><strong>Вебсайт:</strong> {user.website}</p>
-            <p><strong>Компания:</strong> {user.company.name}</p>
-            <div className="flex gap-4">
-                <button
-                    onClick={() => router.push("/")}
-                    className="bg-gray-300 px-4 py-2 rounded"
-                > Назад </button>
-                <button
-                    onClick={() => setIsEditing(true)}
-                    className="bg-gray-500 text-white px-4 py-2 rounded"
-                > Редактировать </button>
-            </div>
-            {/* модалка */}
+        <div className="flex items-center justify-center min-h-screen">
+            <Card className="w-lg max-w-3xl">
+                <CardHeader>
+                    <CardTitle className="flex justify-center">{user.name}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <p><strong>Username: </strong>{user.username}</p>
+                    <p><strong>Email:</strong> {user.email}</p>
+                    <p><strong>Адрес:</strong> {user.address.street}, {user.address.city}, {user.address.zipcode}</p>
+                    <p><strong>Телефон:</strong> {user.phone}</p>
+                    <p><strong>Вебсайт:</strong> {user.website}</p>
+                    <p><strong>Компания:</strong> {user.company.name}</p>
+                </CardContent>
+                <CardFooter className="flex gap-2 justify-center">
+                    <Button onClick={() => router.push("/")}
+                        className="bg-gray-300 px-4 py-2 rounded"
+                        > Назад
+                    </Button>
+                    <Button onClick={() => setIsEditing(true)}
+                        className="bg-gray-500 text-white px-4 py-2 rounded"
+                        > Редактировать 
+                    </Button>
+                </CardFooter>
+            </Card>
+
+            {/* Модальное окно редактирования */}
             {isEditing && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
                     <div className="bg-white p-6 rounded w-96">
-                        <h2 className="text-xl font-bold mb-4">Редактировать</h2>
-
-                        <input
+                        <h2 className="text-xl font-bold mb-4 flex justify-center">Редактировать</h2>
+                        <div className="flex items-center gap-2 mb-2 border p-2">
+                            <span className="font-semibold"> Имя: </span>
+                            <input
+                                type="text"
+                                value={user.name}
+                                onChange={(e) => setUser({ ...user, name: e.target.value })}
+                                className="flex-1" />
+                        </div>
+                        <div className="flex items-center gap-2 mb-2 border p-2">
+                            <span className="font-semibold"> Email: </span>
+                            <input
                             type="text"
-                            value={user.name}
-                            onChange={(e) => setUser({ ...user, name: e.target.value })}
-                            className="border p-2 w-full mb-2"
+                            value={user.email}
+                            onChange={(e) => setUser({ ...user, email: e.target.value })}
+                            className="w-full"
+                            />
+                        </div>
+                        <div className="flex items-center gap-2 mb-2 border p-2">
+                            <span className="font-semibold"> Адрес: </span>
+                            <input
+                            type="text"
+                            value={user.address.street}
+                            onChange={(e) => setUser({ ...user, address:{...user.address, street: e.target.value }})}
+                            className="w-full"
+                            />
+                        </div>
+                        <div className="flex items-center gap-2 mb-2 border p-2">
+                            <span className="font-semibold"> Телефон: </span>
+                            <input
+                            type="text"
+                            value={user.phone}
+                            onChange={(e) => setUser({ ...user, phone: e.target.value })}
+                            className="w-full"
+                            />
+                        </div>
+                        <div className="flex items-center gap-2 mb-2 border p-2">
+                            <span className="font-semibold"> Вебсайт: </span>
+                            <input
+                            type="text"
+                            value={user.website}
+                            onChange={(e) => setUser({ ...user, website: e.target.value })}
+                            className="w-full"
                         />
-                        <input
-                        type="text"
-                        value={user.email}
-                        onChange={(e) => setUser({ ...user, email: e.target.value })}
-                        className="border p-2 w-full mb-2"
+                        </div>
+                        <div className="flex items-center gap-2 mb-2 border p-2">
+                            <span className="font-semibold"> Компания: </span>
+                            <input
+                            type="text"
+                            value={user.company.name}
+                            onChange={(e) => setUser({ ...user, company: {...user.company, name: e.target.value }})}
+                            className="w-full"
                         />
-                        <input
-                        type="text"
-                        value={user.phone}
-                        onChange={(e) => setUser({ ...user, phone: e.target.value })}
-                        className="border p-2 w-full mb-2"
-                        />
-                        <div className="flex justify-center gap-2 mt-4">
-                            <button
-                            onClick={() => setIsEditing(false)}
-                            className="px-2 py-2 bg-green-300 rounded"
-                            > Сохранить </button>
                         </div>
                         <div className="flex justify-center gap-2 mt-4">
                             <button
-                            onClick={() => setIsEditing(false)}
-                            className="px-4 py-2 bg-gray-300 rounded"
-                            > Закрыть </button>
+                                onClick={handleSave}
+                                className="px-4 py-2 bg-green-300 rounded"
+                            >
+                                Сохранить
+                            </button>
+                            <button
+                                onClick={() => setIsEditing(false)}
+                                className="px-4 py-2 bg-gray-300 rounded"
+                            >
+                                Закрыть
+                            </button>
                         </div>
-                        
-                    </div>     
-                </div> 
+                    </div>
+                </div>
             )}
         </div>
-    )
+    );
 }
