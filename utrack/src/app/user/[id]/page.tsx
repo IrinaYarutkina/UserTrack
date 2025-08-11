@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter, useSearchParams  } from "next/navigation";
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@components/ui/Card"; 
-import { Button } from "@components/ui/Button"; 
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "components/ui/Card"; 
+import { Button } from "components/ui/Button"; 
 import { useUserContext, User as ContextUser } from "@/context/UserContext";
-import { Skeleton } from "@components/ui/Skeleton";
-import ErrorCard from "@components/ErrorCard";
+import { Skeleton } from "components/ui/Skeleton";
+import ErrorCard from "components/ErrorCard";
 
 export default function PageUser() {
     const { id } = useParams();

@@ -1,16 +1,16 @@
 'use client';
 
-import UserCard from "@components/UserCard";
+import UserCard from "components/UserCard";
 import type { User } from "@/context/UserContext"; 
-import Search from "@components/Search";
-import FilterCompany from "@components/FilterCompany";
-import AddUserButton from "@components/AddUserButton";
+import Search from "components/Search";
+import FilterCompany from "components/FilterCompany";
+import AddUserButton from "components/AddUserButton";
 import { useUserContext } from "@/context/UserContext";
-import { Skeleton } from "@components/ui/Skeleton";
+import { Skeleton } from "components/ui/Skeleton";
 import { useState, useMemo, useEffect, Suspense } from "react";
 import { useQuery } from "@tanstack/react-query";
-import ErrorCard from "@components/ErrorCard";
-import { getUsers } from "@lib/api";
+import ErrorCard from "components/ErrorCard";
+import { getUsers } from "lib/api";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link"; 
 
