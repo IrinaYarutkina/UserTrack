@@ -20,9 +20,11 @@ export type User = {
 type UserCardProps = {
     user: User;
     onDelete: (id: number) => void;
+    currentSearch: string | null;
+    currentCompany: string | null;
     };
     
-export default function UserCard({ user, onDelete }: UserCardProps) {
+export default function UserCard({ user, onDelete, currentSearch, currentCompany }: UserCardProps) {
     return (
         <Card className="shadow-md "> 
             <CardHeader>
@@ -33,11 +35,14 @@ export default function UserCard({ user, onDelete }: UserCardProps) {
                 <p> Компания: {user.company.name}</p>
             </CardContent>
             <CardFooter className="flex gap-2 justify-center"> 
-                <Link href={`/user/${user.id}`}>
-                    <Button className="border border-violet-400  bg-violet-200 text-black px-4 py-2 rounded-lg hover:bg-violet-100 transition-colors"> 
-                        Подробнее 
-                    </Button>
+            <Button
+                asChild
+                className="border border-violet-400 bg-violet-200 text-black px-4 py-2 rounded-lg hover:bg-violet-100 transition-colors"
+            >
+                <Link href={`/user/${user.id}?search=${encodeURIComponent(currentSearch || "")}&company=${encodeURIComponent(currentCompany || "")}`} >
+                    Подробнее
                 </Link>
+            </Button>
                 <Button className="border border-red-300 bg-red-100 text-black px-4 py-2 rounded-lg hover:bg-orange-50 transition-colors" onClick={() => onDelete(user.id)}> 
                     Удалить 
                 </Button>

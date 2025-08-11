@@ -7,6 +7,8 @@ import Transition from "@components/Transition";
 export const metadata: Metadata = {
   title: "User Tracker",
   description: "Приложение для отслеживания пользователей",
+  icons: {
+    icon: '/user.svg'}, 
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

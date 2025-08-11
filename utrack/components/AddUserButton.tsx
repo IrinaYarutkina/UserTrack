@@ -60,7 +60,7 @@ export default function AddUserButton({ onAddUser }: AddUserButtonProps) {
     <>
         <button
             onClick={openModal}
-            className="px-2 py-2 border border-violet-400  bg-violet-200 text-black rounded hover:bg-violet-100 transition-colors"
+            className=" px-2 py-2 border border-violet-400 bg-violet-200 text-black rounded hover:bg-violet-100 transition-colors text-sm sm:text-base md:text-lg max-w-[130px] flex-shrink-0 "
         > Добавить пользователя
         </button>
 

@@ -9,21 +9,26 @@ import { useUserContext } from "@/context/UserContext";
 import { Skeleton } from "@components/ui/Skeleton";
 import { useState, useMemo, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
+import ErrorCard from "@components/ErrorCard";
+import { getUsers } from "@lib/api";
+import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link"; 
 
-async function fetchUsers(): Promise<User[]> {
-  const res = await fetch("https://jsonplaceholder.typicode.com/users");
-  if (!res.ok) throw new Error("Ошибка загрузки");
-  return res.json();
-}
 
 export default function UsersPage() {
   const { users, setUsers, deleteUserLocally, addUserLocally } = useUserContext();
-  const [searchTerm, setSearchTerm] = useState(""); //поиск
-  const [selectedCompany, setSelectedCompany] = useState<string | null>(null);
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
+  const search = searchParams.get('search') || '';
+const company = searchParams.get('company') || null;
+
+const [searchTerm, setSearchTerm] = useState(search);
+const [selectedCompany, setSelectedCompany] = useState<string | null>(company);
+  
   const { data, isLoading, error } = useQuery<User[]>({
     queryKey: ['users'],
-    queryFn: fetchUsers,
+    queryFn: getUsers,
     staleTime: 5 * 60 * 1000,
     initialData: users.length ? users : undefined,
   });
@@ -34,6 +39,13 @@ export default function UsersPage() {
     }
   }, [data, setUsers]);
 
+  useEffect(() => {
+    const params = new URLSearchParams();
+
+    if (searchTerm) params.set('search', searchTerm);
+    if (selectedCompany) params.set('company', selectedCompany);
+    router.replace(`?${params.toString()}`, { scroll: false });
+  }, [searchTerm, selectedCompany, router]);
 
   const companies = useMemo(() => {
     const setCompanies = new Set(users.map(user => user.company.name));
@@ -49,11 +61,15 @@ export default function UsersPage() {
   }, [users, searchTerm, selectedCompany]);
 
   if (error) {
-    return <div className="p-6 text-red-600">Ошибка загрузки: {(error as Error).message}</div>;
+    return (
+      <div className="p-6">
+        <ErrorCard message={`Ошибка загрузки: ${(error as Error).message}`} />
+      </div>
+    );
   }
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between px-6 pt-6">
+      <div className="flex flex-col items-center sm:flex-row sm:items-center sm:justify-between gap-4 p-6">
         {isLoading ? (
           <>
           {/* скелетоны */}
@@ -83,7 +99,17 @@ export default function UsersPage() {
               <Skeleton key={i} className="h-40 rounded-md bg-gray-200 animate-pulse" />
             ))
           : filteredUsers.map(user => (
-              <UserCard key={user.id} user={user} onDelete={deleteUserLocally} />
+            <Link
+              key={user.id}
+                href={`/user/${user.id}?search=${encodeURIComponent(searchTerm)}&company=${encodeURIComponent(selectedCompany || '')}`}
+                className="block"
+            >
+              <UserCard 
+              user={user} 
+              onDelete={deleteUserLocally}
+              currentSearch={search} 
+              currentCompany={company}  />
+            </Link>
             ))
         }
       </div>
