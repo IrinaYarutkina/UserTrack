@@ -7,24 +7,23 @@ import FilterCompany from "@components/FilterCompany";
 import AddUserButton from "@components/AddUserButton";
 import { useUserContext } from "@/context/UserContext";
 import { Skeleton } from "@components/ui/Skeleton";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, Suspense } from "react";
 import { useQuery } from "@tanstack/react-query";
 import ErrorCard from "@components/ErrorCard";
 import { getUsers } from "@lib/api";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link"; 
 
-
-export default function UsersPage() {
+function UsersContent() {
   const { users, setUsers, deleteUserLocally, addUserLocally } = useUserContext();
   const router = useRouter();
   const searchParams = useSearchParams();
 
   const search = searchParams.get('search') || '';
-const company = searchParams.get('company') || null;
+  const company = searchParams.get('company') || null;
 
-const [searchTerm, setSearchTerm] = useState(search);
-const [selectedCompany, setSelectedCompany] = useState<string | null>(company);
+  const [searchTerm, setSearchTerm] = useState(search);
+  const [selectedCompany, setSelectedCompany] = useState<string | null>(company);
   
   const { data, isLoading, error } = useQuery<User[]>({
     queryKey: ['users'],
@@ -67,52 +66,71 @@ const [selectedCompany, setSelectedCompany] = useState<string | null>(company);
       </div>
     );
   }
+
   return (
     <div className="space-y-4">
       <div className="flex flex-col items-center sm:flex-row sm:items-center sm:justify-between gap-4 p-6">
         {isLoading ? (
           <>
-          {/* скелетоны */}
-          <Skeleton className="h-10 w-64 rounded-md bg-gray-200 animate-pulse" />
-          <Skeleton className="h-10 w-40 rounded-md bg-gray-200 animate-pulse" />
-          <Skeleton className="h-10 w-32 rounded-md bg-gray-200 animate-pulse" />
+            <Skeleton className="h-10 w-64 rounded-md bg-gray-200 animate-pulse" />
+            <Skeleton className="h-10 w-40 rounded-md bg-gray-200 animate-pulse" />
+            <Skeleton className="h-10 w-32 rounded-md bg-gray-200 animate-pulse" />
           </>
         ) : (
           <>
-        {/* поиск */}
-        <Search onSearch={setSearchTerm} />
-        {/* фильтр */}
-        <FilterCompany
-          companies={companies}
-          selectedCompany={selectedCompany}
-          onChange={setSelectedCompany}
-        />
-        <AddUserButton onAddUser={addUserLocally} />
+            <Search onSearch={setSearchTerm} />
+            <FilterCompany
+              companies={companies}
+              selectedCompany={selectedCompany}
+              onChange={setSelectedCompany}
+            />
+            <AddUserButton onAddUser={addUserLocally} />
           </>
         )}
       </div>
 
-    {/* пользователи */}
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-6">
         {isLoading
           ? [...Array(9)].map((_, i) => (
               <Skeleton key={i} className="h-40 rounded-md bg-gray-200 animate-pulse" />
             ))
           : filteredUsers.map(user => (
-            <Link
-              key={user.id}
+              <Link
+                key={user.id}
                 href={`/user/${user.id}?search=${encodeURIComponent(searchTerm)}&company=${encodeURIComponent(selectedCompany || '')}`}
                 className="block"
-            >
-              <UserCard 
-              user={user} 
-              onDelete={deleteUserLocally}
-              currentSearch={search} 
-              currentCompany={company}  />
-            </Link>
+              >
+                <UserCard 
+                  user={user} 
+                  onDelete={deleteUserLocally}
+                  currentSearch={search} 
+                  currentCompany={company}  
+                />
+              </Link>
             ))
         }
       </div>
     </div>
+  );
+}
+
+export default function UsersPage() {
+  return (
+    <Suspense fallback={
+      <div className="p-6">
+        <div className="flex flex-col items-center sm:flex-row sm:items-center sm:justify-between gap-4">
+          <Skeleton className="h-10 w-64 rounded-md bg-gray-200 animate-pulse" />
+          <Skeleton className="h-10 w-40 rounded-md bg-gray-200 animate-pulse" />
+          <Skeleton className="h-10 w-32 rounded-md bg-gray-200 animate-pulse" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+          {[...Array(9)].map((_, i) => (
+            <Skeleton key={i} className="h-40 rounded-md bg-gray-200 animate-pulse" />
+          ))}
+        </div>
+      </div>
+    }>
+      <UsersContent />
+    </Suspense>
   );
 }
